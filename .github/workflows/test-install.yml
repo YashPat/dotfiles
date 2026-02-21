@@ -1,4 +1,4 @@
-name: Test install script
+name: Test link-dotfiles
 
 on:
   push:
@@ -7,18 +7,18 @@ on:
     branches: [main]
 
 jobs:
-  test-install:
+  test-link-dotfiles:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run install script
+      - name: Run link-dotfiles.sh
         env:
           HOME: ${{ github.workspace }}/test-home
         run: |
           cd "$GITHUB_WORKSPACE"
           mkdir -p "$HOME/.config"
-          bash install.sh
+          bash link-dotfiles.sh
 
       - name: Verify symlinks
         env:

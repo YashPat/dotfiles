@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 #
-# install.sh — Idempotent symlink installer for Yash's dotfiles.
-# Run from ~/dotfiles. Safe to run multiple times.
+# link-dotfiles.sh — Idempotent symlink installer. Creates links from this repo
+# into $HOME so shell, Kitty, Starship, and Git use the repo as source of truth.
 #
-# Safety: If a real file exists at the target (not a symlink), it is
-# backed up to <target>.bak before linking. Existing symlinks are force-updated.
+# Run from the repo root. Safe to run multiple times.
+# If a real file exists at the target (not a symlink), it is backed up to
+# <target>.bak.<timestamp> before linking (no overwrite). Existing symlinks are force-updated.
 #
 
 set -e
@@ -36,8 +37,9 @@ link() {
     ln -sfn "$src" "$dst"
     echo "LINK (updated): $dst -> $src"
   elif [[ -e "$dst" ]]; then
-    mv "$dst" "${dst}.bak"
-    echo "BACKUP: $dst -> ${dst}.bak"
+    backup="${dst}.bak.$(date +%s)"
+    mv "$dst" "$backup"
+    echo "BACKUP: $dst -> $backup"
     ln -sfn "$src" "$dst"
     echo "LINK: $dst -> $src"
   else

@@ -21,13 +21,24 @@ Install via Homebrew if needed: `brew install starship kitty eza`.
 
 ---
 
+## Scripts
+
+| Script | Purpose | When to use |
+|--------|---------|-------------|
+| **`link-dotfiles.sh`** | Creates symlinks from this repo into `$HOME` (and `~/.config`). Idempotent; backs up existing real files to `<path>.bak.<timestamp>` before linking. | You already have Homebrew and tools installed; you only need to (re)link config. Also what CI tests. |
+| **`bootstrap.sh`** | Installs Homebrew (if missing), runs `brew install starship kitty eza`, then runs `link-dotfiles.sh`. Idempotent. | New Mac: clone repo, run this once to get everything. |
+
+**Maintainability:** Only `link-dotfiles.sh` is tested in CI. It has a single responsibility (symlinks) and no external installs, so it stays reliable. `bootstrap.sh` is a convenience wrapper; change it when you add/remove prerequisites.
+
+---
+
 ## How it works
 
 This repo uses **symbolic links**: the real files live in `~/dotfiles`, and your home directory holds small "pointer" files that redirect to them. When an app reads `~/.zshrc`, it actually gets the content from `~/dotfiles/zshrc`.
 
-**Why symlinks?** One source of truth: you edit and version-control the files in the repo, and every app (zsh, Kitty, Git, etc.) sees the same content through the links. No copying, no drift—and on a new machine you just clone and run `install.sh` to get the same setup.
+**Why symlinks?** One source of truth: you edit and version-control the files in the repo, and every app (zsh, Kitty, Git, etc.) sees the same content through the links. No copying, no drift—and on a new machine you just clone and run `link-dotfiles.sh` (or `bootstrap.sh`) to get the same setup.
 
-**Example:** after running `install.sh`:
+**Example:** after running `link-dotfiles.sh`:
 
 | Real file (in repo)   | Symlink (what apps see)        |
 |-----------------------|---------------------------------|
@@ -83,22 +94,30 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 
 ## Setup on a New Mac
 
-1. Clone the repo (replace with your real repo URL):
+1. Install Xcode Command Line Tools if needed: `xcode-select --install`
+
+2. Clone the repo (replace with your real repo URL):
 
    ```bash
    git clone https://github.com/YOUR_USERNAME/dotfiles.git ~/dotfiles
    cd ~/dotfiles
    ```
 
-2. Install [prerequisites](#prerequisites) (Homebrew, Starship, Kitty, eza, and a Nerd Font in Kitty).
-
-3. Run the installer (idempotent — safe to run more than once). Existing real files at target paths are backed up to `<path>.bak`; existing symlinks are force-updated:
+3. **Option A — One command (new Mac):** Run bootstrap to install Homebrew, Starship, Kitty, eza, and link config:
 
    ```bash
-   chmod +x install.sh && ./install.sh
+   chmod +x bootstrap.sh link-dotfiles.sh && ./bootstrap.sh
    ```
 
-4. Reload your shell:
+   **Option B — Links only:** If you already have [prerequisites](#prerequisites) installed, just link the config:
+
+   ```bash
+   chmod +x link-dotfiles.sh && ./link-dotfiles.sh
+   ```
+
+4. Install a [Nerd Font](https://www.nerdfonts.com/font-downloads) and set it in Kitty (e.g. in `kitty.conf`: `font_family JetBrainsMono Nerd Font`).
+
+5. Reload your shell:
 
    ```bash
    source ~/.zshrc
@@ -119,7 +138,7 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 
 ## CI
 
-Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml): the install script is run in a fresh environment and all four symlinks are verified. Check the **Actions** tab on GitHub to confirm the workflow passes.
+Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml): `link-dotfiles.sh` is run in a fresh environment and all four symlinks are verified. Only the link script is tested (no Homebrew or formulae) so CI stays fast and deterministic. Check the **Actions** tab on GitHub to confirm the workflow passes.
 
 ---
 
@@ -129,7 +148,7 @@ Every push and pull request to `main` runs [GitHub Actions](.github/workflows/te
 If a symlink points to a missing or moved file (e.g. repo was moved or a file was deleted):
 
 1. Remove the broken link: `rm ~/.zshrc` (or the affected path).
-2. Re-run the installer: `cd ~/dotfiles && ./install.sh`.
+2. Re-run the link script: `cd ~/dotfiles && ./link-dotfiles.sh`.
 
 The script will recreate the link. Reload the shell with `source ~/.zshrc` if you fixed `~/.zshrc`.
 
