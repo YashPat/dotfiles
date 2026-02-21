@@ -21,27 +21,20 @@ Install via Homebrew if needed: `brew install starship kitty eza`.
 
 ---
 
-## Architecture
+## How it works
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  ~/dotfiles (this repo) — THE SOURCE OF TRUTH                    │
-│  ┌─────────────┐ ┌─────────────┐ ┌──────────────┐ ┌──────────┐ │
-│  │ zshrc        │ │ kitty.conf  │ │ starship.toml│ │ gitconfig│ │
-│  └──────┬──────┘ └──────┬──────┘ └──────┬───────┘ └────┬─────┘ │
-└─────────┼───────────────┼───────────────┼──────────────┼────────┘
-          │               │               │              │
-          │  ln -sf       │  ln -sf       │  ln -sf      │  ln -sf
-          ▼               ▼               ▼             ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  System (what apps actually read)                                 │
-│  ~/.zshrc    ~/.config/kitty/kitty.conf   ~/.config/starship.toml  ~/.gitconfig
-│  (symlinks — they "point" back into ~/dotfiles)                   │
-└─────────────────────────────────────────────────────────────────┘
-```
+This repo uses **symbolic links**: the real files live in `~/dotfiles`, and your home directory holds small "pointer" files that redirect to them. When an app reads `~/.zshrc`, it actually gets the content from `~/dotfiles/zshrc`.
 
-- **Repo** = real files.  
-- **System** = links that point into the repo. Editing a "file" in `~/.zshrc` or `~/.config/starship.toml` is really editing the file inside `~/dotfiles`.
+**Why symlinks?** One source of truth: you edit and version-control the files in the repo, and every app (zsh, Kitty, Git, etc.) sees the same content through the links. No copying, no drift—and on a new machine you just clone and run `install.sh` to get the same setup.
+
+**Example:** after running `install.sh`:
+
+| Real file (in repo)   | Symlink (what apps see)        |
+|-----------------------|---------------------------------|
+| `~/dotfiles/zshrc`    | `~/.zshrc` → points to the repo |
+| `~/dotfiles/kitty.conf` | `~/.config/kitty/kitty.conf` → points to the repo |
+
+So you always **edit the file inside `~/dotfiles`**; the symlinks just make that file appear where your shell and apps expect it.
 
 ---
 
