@@ -3,6 +3,9 @@
 # install.sh — Idempotent symlink installer for Yash's dotfiles.
 # Run from ~/dotfiles. Safe to run multiple times.
 #
+# Safety: If a real file exists at the target (not a symlink), it is
+# backed up to <target>.bak before linking. Existing symlinks are force-updated.
+#
 
 set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,11 +19,11 @@ echo "Dotfiles repo: $REPO_ROOT"
 echo "HOME: $HOME"
 echo ""
 
-# Create config directories if needed
+# Ensure config directories exist (absolute paths)
 mkdir -p "$HOME/.config/kitty"
 mkdir -p "$HOME/.config"
 
-# Symlink: repo file -> system path (force, no-dereference)
+# Link repo file to system path. Backs up real files; force-updates symlinks.
 link() {
   local src="$1"
   local dst="$2"
@@ -28,8 +31,19 @@ link() {
     echo "SKIP (missing): $src" >&2
     return 0
   fi
-  ln -sfn "$src" "$dst"
-  echo "LINK: $dst -> $src"
+
+  if [[ -L "$dst" ]]; then
+    ln -sfn "$src" "$dst"
+    echo "LINK (updated): $dst -> $src"
+  elif [[ -e "$dst" ]]; then
+    mv "$dst" "${dst}.bak"
+    echo "BACKUP: $dst -> ${dst}.bak"
+    ln -sfn "$src" "$dst"
+    echo "LINK: $dst -> $src"
+  else
+    ln -sfn "$src" "$dst"
+    echo "LINK: $dst -> $src"
+  fi
 }
 
 # Shell
