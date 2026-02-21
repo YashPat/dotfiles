@@ -16,6 +16,7 @@ jobs:
         env:
           HOME: ${{ github.workspace }}/test-home
         run: |
+          cd "$GITHUB_WORKSPACE"
           mkdir -p "$HOME/.config"
           bash install.sh
 
@@ -31,8 +32,9 @@ jobs:
               exit 1
             fi
             target=$(readlink -f "$dst")
-            if [[ "$target" != "$expected_src" ]]; then
-              echo "FAIL: $dst points to $target, expected $expected_src"
+            expected_canonical=$(readlink -f "$expected_src")
+            if [[ "$target" != "$expected_canonical" ]]; then
+              echo "FAIL: $dst points to $target, expected $expected_canonical"
               exit 1
             fi
             echo "OK $dst -> $target"
