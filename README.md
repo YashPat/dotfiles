@@ -138,7 +138,12 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 
 ## CI
 
-Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml): `link-dotfiles.sh` is run in a fresh environment and all four symlinks are verified. Only the link script is tested (no Homebrew or formulae) so CI stays fast and deterministic. Check the **Actions** tab on GitHub to confirm the workflow passes.
+Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml):
+
+- **link-dotfiles:** The link script runs in a fresh environment and all four symlinks are verified (no Homebrew or formulae—fast and deterministic).
+- **bootstrap.sh:** On Linux, the workflow confirms bootstrap exits with the "macOS only" message (smoke test; full bootstrap is not run in CI).
+
+Check the **Actions** tab on GitHub to confirm both pass.
 
 ---
 

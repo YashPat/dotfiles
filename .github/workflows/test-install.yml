@@ -44,3 +44,18 @@ jobs:
           check_link "$HOME/.config/kitty/kitty.conf" "$REPO/kitty.conf"
           check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
           echo "All symlinks verified."
+
+  test-bootstrap-fails-on-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bootstrap.sh exits with macOS-only message on Linux
+        run: |
+          out=$(bash bootstrap.sh 2>&1); code=$?
+          if [[ $code -eq 1 ]] && echo "$out" | grep -q "bootstrap.sh is for macOS only"; then
+            echo "OK: bootstrap.sh correctly refuses to run on Linux"
+          else
+            echo "FAIL: expected exit 1 and macOS-only message. Exit code: $code"
+            echo "$out"
+            exit 1
+          fi
