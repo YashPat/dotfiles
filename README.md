@@ -117,6 +117,12 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 
 ---
 
+## CI
+
+Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml): the install script is run in a fresh environment and all four symlinks are verified. Check the **Actions** tab on GitHub to confirm the workflow passes.
+
+---
+
 ## Troubleshooting
 
 **Broken link (e.g. prompt or shell config not loading):**  

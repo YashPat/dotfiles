@@ -1,0 +1,44 @@
+name: Test install script
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run install script
+        env:
+          HOME: ${{ github.workspace }}/test-home
+        run: |
+          mkdir -p "$HOME/.config"
+          ./install.sh
+
+      - name: Verify symlinks
+        env:
+          HOME: ${{ github.workspace }}/test-home
+          REPO: ${{ github.workspace }}
+        run: |
+          check_link() {
+            local dst="$1" expected_src="$2"
+            if [[ ! -L "$dst" ]]; then
+              echo "FAIL: $dst is not a symlink"
+              exit 1
+            fi
+            target=$(readlink -f "$dst")
+            if [[ "$target" != "$expected_src" ]]; then
+              echo "FAIL: $dst points to $target, expected $expected_src"
+              exit 1
+            fi
+            echo "OK $dst -> $target"
+          }
+          check_link "$HOME/.zshrc" "$REPO/zshrc"
+          check_link "$HOME/.gitconfig" "$REPO/gitconfig"
+          check_link "$HOME/.config/kitty/kitty.conf" "$REPO/kitty.conf"
+          check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
+          echo "All symlinks verified."
