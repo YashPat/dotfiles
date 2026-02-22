@@ -14,6 +14,6 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
 # Casks (brew install --cask) — uncomment or add what you use
-# cask "cursor"
-# cask "raycast"
-# cask "font-fira-code-nerd-font"
+cask "cursor"
+cask "alfred"
+cask "google-chrome"
