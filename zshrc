@@ -1,23 +1,21 @@
-alias swiftCode="cd documents/code/swift"
-alias pythonCode="cd documents/code/python"
-alias adjust="source ~/.zshrc"
-alias rs="bash runSwift.sh $1"
-alias rp="bash runPython.sh $1"
-export PATH=/usr/local/bin:/usr/local/bin:/Library/Frameworks/Python.framework/Versions/3.9/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/opt/homebrew/bin
+# --- PATH (only add what you need; system + Homebrew already set the rest) ---
+export PATH="$HOME/go/bin:$PATH"                    # Go binaries (go install)
+export PATH="/opt/homebrew/opt/bison/bin:$PATH"      # Homebrew bison (keg-only)
 
+# --- Node (nvm) ---
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+# --- Aliases ---
+alias adjust="source ~/.zshrc"
 alias ls='eza --icons --grid --group-directories-first'
 alias ll='eza --icons --long --header --git'
 alias tree='eza --icons --tree'
 alias zconf='cursor ~/.zshrc'
 alias kconf='cursor ~/.config/kitty/kitty.conf'
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-export PATH="/opt/homebrew/opt/bison/bin:$PATH"
-
+# --- Prompt & plugins (brew install zsh-syntax-highlighting zsh-autosuggestions) ---
 eval "$(starship init zsh)"
 source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-export PATH="/Users/yashpatil/go/bin:$PATH"
