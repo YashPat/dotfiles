@@ -6,18 +6,10 @@ Single source of truth for macOS shell and terminal configuration. Everything li
 
 ## Prerequisites
 
-Before running the installer or relying on this config, ensure these are installed:
+- **Homebrew** — bootstrap installs it if missing.
+- **Everything in `Brewfile`** — that’s the single list of formulae and casks. From the repo root: `brew bundle`. Bootstrap runs this for you. Add or remove entries in `Brewfile`; no need to update this README.
 
-| Tool | Purpose |
-|------|---------|
-| **Homebrew** | Package manager; used for zsh plugins (syntax-highlighting, autosuggestions), eza, etc. |
-| **Starship** | Cross-shell prompt (configured in `starship.toml`). |
-| **Kitty** | Terminal emulator (configured in `kitty.conf`). |
-| **eza** | Modern `ls` replacement; `zshrc` aliases `ls`/`ll`/`tree` to eza. |
-
-Install via Homebrew if needed: `brew install starship kitty eza`.
-
-**Nerd Font:** Starship uses symbols (icons/glyphs) that require a **Nerd Font**. Install one (e.g. [JetBrains Mono Nerd Font](https://www.nerdfonts.com/font-downloads)) and set it as the font in Kitty (e.g. in `kitty.conf`: `font_family JetBrainsMono Nerd Font`) so the prompt renders correctly.
+**Nerd Font:** If you use Starship, install a [Nerd Font](https://www.nerdfonts.com/font-downloads) and set it in Kitty (e.g. in `kitty.conf`: `font_family JetBrainsMono Nerd Font`) so the prompt renders correctly.
 
 ---
 
@@ -26,7 +18,7 @@ Install via Homebrew if needed: `brew install starship kitty eza`.
 | Script | Purpose | When to use |
 |--------|---------|-------------|
 | **`link-dotfiles.sh`** | Creates symlinks from this repo into `$HOME` (and `~/.config`). Idempotent; backs up existing real files to `<path>.bak.<timestamp>` before linking. | You already have Homebrew and tools installed; you only need to (re)link config. Also what CI tests. |
-| **`bootstrap.sh`** | Installs Homebrew (if missing), runs `brew install starship kitty eza`, then runs `link-dotfiles.sh`. Idempotent. | New Mac: clone repo, run this once to get everything. |
+| **`bootstrap.sh`** | Installs Homebrew (if missing), runs `brew bundle` from `Brewfile`, then runs `link-dotfiles.sh`. Idempotent. | New Mac: clone repo, run this once to get everything. |
 
 **Maintainability:** Only `link-dotfiles.sh` is tested in CI. It has a single responsibility (symlinks) and no external installs, so it stays reliable. `bootstrap.sh` is a convenience wrapper; change it when you add/remove prerequisites.
 
@@ -83,13 +75,13 @@ cd ~/dotfiles && git add -A && git status && git commit -m "Describe change" && 
    cd ~/dotfiles
    ```
 
-3. **Option A — One command (new Mac):** Run bootstrap to install Homebrew, Starship, Kitty, eza, and link config:
+3. **Option A — New Mac (one script):** Run bootstrap once. It installs Homebrew (if needed), everything in `Brewfile`, and links your config. No other scripts needed.
 
    ```bash
    chmod +x bootstrap.sh link-dotfiles.sh && ./bootstrap.sh
    ```
 
-   **Option B — Links only:** If you already have [prerequisites](#prerequisites) installed, just link the config:
+   **Option B — Links only:** If you already have Homebrew and your tools (e.g. you ran `brew bundle` earlier), just link the config:
 
    ```bash
    chmod +x link-dotfiles.sh && ./link-dotfiles.sh

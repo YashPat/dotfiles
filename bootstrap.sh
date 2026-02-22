@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # bootstrap.sh — One-shot setup for a new Mac: installs Homebrew (if missing),
-# installs Starship, Kitty, and eza, then runs link-dotfiles.sh so config is
+# runs brew bundle from Brewfile, then runs link-dotfiles.sh so config is
 # symlinked into $HOME.
 #
 # Run from the repo root after cloning. Idempotent: safe to run multiple times.
@@ -39,9 +39,14 @@ else
   echo "Homebrew already installed."
 fi
 
-# Install formulae (idempotent: already installed is a no-op)
-echo "Installing Starship, Kitty, eza..."
-brew install starship kitty eza
+# Install everything from Brewfile (idempotent: already installed is a no-op)
+if [[ -f "$REPO_ROOT/Brewfile" ]]; then
+  echo "Installing from Brewfile..."
+  brew bundle --file="$REPO_ROOT/Brewfile"
+else
+  echo "No Brewfile found, installing Starship, Kitty, eza..."
+  brew install starship kitty eza
+fi
 
 # Link dotfiles into $HOME (idempotent)
 if [[ ! -f "$REPO_ROOT/link-dotfiles.sh" ]]; then
