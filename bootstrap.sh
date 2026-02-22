@@ -11,6 +11,7 @@
 
 set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+trap 'e=$?; if [[ $e -ne 0 ]]; then echo "Bootstrap failed before linking. Run ./link-dotfiles.sh to link config." >&2; fi; exit $e' EXIT
 
 # Bootstrap is for macOS (Homebrew and formulae are Mac-oriented here)
 if [[ "$(uname)" != "Darwin" ]]; then

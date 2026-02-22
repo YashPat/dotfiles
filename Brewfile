@@ -7,7 +7,6 @@
 # Formulae (brew install)
 brew "aria2"
 brew "starship"
-brew "kitty"
 brew "eza"
 brew "git"
 brew "ncdu"
@@ -20,6 +19,7 @@ brew "ncspot"
 brew "xcodes"
 
 # Casks (brew install --cask) — uncomment or add what you use
+cask "kitty"
 cask "cursor"
 cask "alfred"
 cask "google-chrome"
