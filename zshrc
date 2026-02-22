@@ -1,7 +1,3 @@
-# --- PATH (only add what you need; system + Homebrew already set the rest) ---
-export PATH="$HOME/go/bin:$PATH"                    # Go binaries (go install)
-export PATH="/opt/homebrew/opt/bison/bin:$PATH"      # Homebrew bison (keg-only)
-
 # --- Aliases ---
 alias adjust="source ~/.zshrc"
 alias ls='eza --icons --grid --group-directories-first'
@@ -10,7 +6,7 @@ alias tree='eza --icons --tree'
 alias zconf='cursor ~/.zshrc'
 alias kconf='cursor ~/.config/kitty/kitty.conf'
 
-# --- Prompt & plugins (brew install zsh-syntax-highlighting zsh-autosuggestions) ---
-eval "$(starship init zsh)"
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+# --- Prompt & plugins (packages are in Brewfile) ---
+eval "$(starship init zsh)"                                    # prompt from starship.toml
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh   # command coloring
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh          # history suggestions (→ to accept)
