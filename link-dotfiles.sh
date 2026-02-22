@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # link-dotfiles.sh — Idempotent symlink installer. Creates links from this repo
-# into $HOME so shell, Kitty, Starship, and Git use the repo as source of truth.
+# into $HOME so shell, Kitty, and Starship use the repo as source of truth.
 #
 # Run from the repo root. Safe to run multiple times.
 # If a real file exists at the target (not a symlink), it is backed up to
@@ -50,9 +50,6 @@ link() {
 
 # Shell
 link "$REPO_ROOT/zshrc" "$HOME/.zshrc"
-
-# Git
-link "$REPO_ROOT/gitconfig" "$HOME/.gitconfig"
 
 # Kitty
 link "$REPO_ROOT/kitty.conf" "$HOME/.config/kitty/kitty.conf"

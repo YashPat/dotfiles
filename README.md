@@ -1,6 +1,6 @@
 # Yash's Dotfiles
 
-Single source of truth for macOS shell, terminal, and Git configuration. Everything lives in `~/dotfiles`; the rest of the system uses **symbolic links** so edits here are reflected everywhere.
+Single source of truth for macOS shell and terminal configuration. Everything lives in `~/dotfiles`; the rest of the system uses **symbolic links** so edits here are reflected everywhere.
 
 ---
 
@@ -36,7 +36,7 @@ Install via Homebrew if needed: `brew install starship kitty eza`.
 
 This repo uses **symbolic links**: the real files live in `~/dotfiles`, and your home directory holds small "pointer" files that redirect to them. When an app reads `~/.zshrc`, it actually gets the content from `~/dotfiles/zshrc`.
 
-**Why symlinks?** One source of truth: you edit and version-control the files in the repo, and every app (zsh, Kitty, Git, etc.) sees the same content through the links. No copying, no drift—and on a new machine you just clone and run `link-dotfiles.sh` (or `bootstrap.sh`) to get the same setup.
+**Why symlinks?** One source of truth: you edit and version-control the files in the repo, and every app (zsh, Kitty, etc.) sees the same content through the links. No copying, no drift—and on a new machine you just clone and run `link-dotfiles.sh` (or `bootstrap.sh`) to get the same setup.
 
 **Example:** after running `link-dotfiles.sh`:
 
@@ -69,26 +69,6 @@ After changes you want to keep:
 ```bash
 cd ~/dotfiles && git add -A && git status && git commit -m "Describe change" && git push
 ```
-
----
-
-## Privacy note (gitconfig)
-
-If this repo is **public**, the included `gitconfig` will be visible and may contain your name and email. To avoid leaking sensitive or work emails, use a **local override** that is not in the repo:
-
-1. Keep only generic/safe defaults in `~/dotfiles/gitconfig`.
-2. At the end of `~/dotfiles/gitconfig`, add:
-   ```ini
-   [include]
-       path = ~/.gitconfig.local
-   ```
-3. Create `~/.gitconfig.local` (do **not** put it in the repo) with your real identity, e.g.:
-   ```ini
-   [user]
-       name = Your Name
-       email = you@example.com
-   ```
-   Git will read this after the symlinked config, so your private email stays off the repo.
 
 ---
 
@@ -130,7 +110,6 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 | Repo file       | System location                  |
 |-----------------|----------------------------------|
 | `zshrc`         | `~/.zshrc`                       |
-| `gitconfig`     | `~/.gitconfig`                   |
 | `kitty.conf`    | `~/.config/kitty/kitty.conf`     |
 | `starship.toml` | `~/.config/starship.toml`        |
 
@@ -140,7 +119,7 @@ If this repo is **public**, the included `gitconfig` will be visible and may con
 
 Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml):
 
-- **link-dotfiles:** The link script runs in a fresh environment and all four symlinks are verified (no Homebrew or formulae—fast and deterministic).
+- **link-dotfiles:** The link script runs in a fresh environment and all three symlinks are verified (no Homebrew or formulae—fast and deterministic).
 - **bootstrap.sh:** On Linux, the workflow confirms bootstrap exits with the "macOS only" message (smoke test; full bootstrap is not run in CI).
 
 Check the **Actions** tab on GitHub to confirm both pass.
