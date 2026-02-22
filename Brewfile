@@ -8,6 +8,10 @@
 brew "starship"
 brew "kitty"
 brew "eza"
+brew "git"
+brew "ncdu"
+brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
 
 # Casks (brew install --cask) — uncomment or add what you use
 # cask "cursor"
