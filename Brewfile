@@ -5,6 +5,7 @@
 # tap "homebrew/cask-fonts"
 
 # Formulae (brew install)
+brew "aria2"
 brew "starship"
 brew "kitty"
 brew "eza"
@@ -16,6 +17,7 @@ brew "zsh-syntax-highlighting"
 brew "mole"
 brew "gitui"
 brew "ncspot"
+brew "xcodes"
 
 # Casks (brew install --cask) — uncomment or add what you use
 cask "cursor"
