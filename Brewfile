@@ -10,6 +10,7 @@ brew "kitty"
 brew "eza"
 brew "git"
 brew "ncdu"
+brew "yazi"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 
