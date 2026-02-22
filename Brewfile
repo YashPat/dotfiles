@@ -13,6 +13,9 @@ brew "ncdu"
 brew "yazi"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
+brew "mole"
+brew "gitui"
+brew "ncspot"
 
 # Casks (brew install --cask) — uncomment or add what you use
 cask "cursor"
