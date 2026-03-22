@@ -8,18 +8,11 @@
 brew "aria2"
 brew "starship"
 brew "eza"
-brew "git"
 brew "ncdu"
 brew "yazi"
 brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "mole"
-brew "gitui"
-brew "ncspot"
-brew "xcodes"
 
 # Casks (brew install --cask) — uncomment or add what you use
 cask "kitty"
-cask "cursor"
-cask "alfred"
-cask "google-chrome"
