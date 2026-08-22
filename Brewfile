@@ -10,6 +10,7 @@ brew "starship"
 brew "eza"
 brew "ncdu"
 brew "zsh-autosuggestions"
+brew "zsh-syntax-highlighting"
 brew "mole"
 
 # Casks (brew install --cask) — uncomment or add what you use

@@ -12,5 +12,8 @@ alias kconf='cursor ~/.config/kitty/kitty.conf'
 [[ -x /usr/local/bin/brew ]] && eval "$(/usr/local/bin/brew shellenv)"
 export PATH="$HOME/.local/bin:$PATH"                           # cursor agent, etc.
 eval "$(starship init zsh)"                                    # prompt from starship.toml
-source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh   # command coloring
-source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh          # history suggestions (→ to accept)
+# Plugins — only source if installed (avoids hard errors on fresh machines)
+[[ -f "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]] && \
+  source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+[[ -f "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
+  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
