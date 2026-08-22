@@ -21,7 +21,6 @@ echo "HOME: $HOME"
 echo ""
 
 # Ensure config directories exist (absolute paths)
-mkdir -p "$HOME/.config/kitty"
 mkdir -p "$HOME/.config"
 
 # Link repo file to system path. Backs up real files; force-updates symlinks.
@@ -51,8 +50,9 @@ link() {
 # Shell
 link "$REPO_ROOT/zshrc" "$HOME/.zshrc"
 
-# Kitty
-link "$REPO_ROOT/kitty.conf" "$HOME/.config/kitty/kitty.conf"
+# Kitty — whole config dir so `kitten themes` can write current-theme.conf
+# next to kitty.conf (relative includes work; plain `kitten themes` just works)
+link "$REPO_ROOT/kitty" "$HOME/.config/kitty"
 
 # Starship
 link "$REPO_ROOT/starship.toml" "$HOME/.config/starship.toml"

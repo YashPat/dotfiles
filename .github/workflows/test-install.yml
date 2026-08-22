@@ -40,7 +40,8 @@ jobs:
             echo "OK $dst -> $target"
           }
           check_link "$HOME/.zshrc" "$REPO/zshrc"
-          check_link "$HOME/.config/kitty/kitty.conf" "$REPO/kitty.conf"
+          check_link "$HOME/.config/kitty" "$REPO/kitty"
+          check_link "$HOME/.config/kitty/kitty.conf" "$REPO/kitty/kitty.conf"
           check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
           echo "All symlinks verified."
 

@@ -35,7 +35,7 @@ This repo uses **symbolic links**: the real files live in `~/dotfiles`, and your
 | Real file (in repo)   | Symlink (what apps see)        |
 |-----------------------|---------------------------------|
 | `~/dotfiles/zshrc`    | `~/.zshrc` → points to the repo |
-| `~/dotfiles/kitty.conf` | `~/.config/kitty/kitty.conf` → points to the repo |
+| `~/dotfiles/kitty/`   | `~/.config/kitty` → points to the repo (whole dir, so `kitten themes` works) |
 
 So you always **edit the file inside `~/dotfiles`**; the symlinks just make that file appear where your shell and apps expect it.
 
@@ -102,7 +102,7 @@ cd ~/dotfiles && git add -A && git status && git commit -m "Describe change" && 
 | Repo file       | System location                  |
 |-----------------|----------------------------------|
 | `zshrc`         | `~/.zshrc`                       |
-| `kitty.conf`    | `~/.config/kitty/kitty.conf`     |
+| `kitty/`        | `~/.config/kitty`                |
 | `starship.toml` | `~/.config/starship.toml`        |
 
 ---
