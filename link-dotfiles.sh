@@ -57,5 +57,17 @@ link "$REPO_ROOT/kitty.conf" "$HOME/.config/kitty/kitty.conf"
 # Starship
 link "$REPO_ROOT/starship.toml" "$HOME/.config/starship.toml"
 
+# wall CLI (https://github.com/YashPat/wall) — clone/pull, then link into PATH
+WALL_REPO="$HOME/Code/wall"
+mkdir -p "$HOME/.local/bin" "$HOME/Code"
+if [[ -d "$WALL_REPO/.git" ]]; then
+  echo "Updating wall..."
+  git -C "$WALL_REPO" pull --ff-only
+else
+  echo "Cloning wall..."
+  git clone https://github.com/YashPat/wall.git "$WALL_REPO"
+fi
+link "$WALL_REPO/wall" "$HOME/.local/bin/wall"
+
 echo ""
 echo "Done. Reload shell config: source ~/.zshrc"
