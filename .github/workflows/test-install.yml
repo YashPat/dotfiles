@@ -41,7 +41,14 @@ jobs:
           }
           check_link "$HOME/.zshrc" "$REPO/zshrc"
           check_link "$HOME/.config/kitty" "$REPO/kitty"
-          check_link "$HOME/.config/kitty/kitty.conf" "$REPO/kitty/kitty.conf"
+          # kitty.conf is a regular file inside the linked kitty/ dir, not its own symlink
+          kitty_conf=$(readlink -f "$HOME/.config/kitty/kitty.conf")
+          expected_kitty_conf=$(readlink -f "$REPO/kitty/kitty.conf")
+          if [[ ! -f "$HOME/.config/kitty/kitty.conf" ]] || [[ "$kitty_conf" != "$expected_kitty_conf" ]]; then
+            echo "FAIL: kitty.conf via linked dir is $kitty_conf, expected $expected_kitty_conf"
+            exit 1
+          fi
+          echo "OK $HOME/.config/kitty/kitty.conf resolves to $kitty_conf"
           check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
           echo "All symlinks verified."
 
