@@ -50,6 +50,7 @@ jobs:
           fi
           echo "OK $HOME/.config/kitty/kitty.conf resolves to $kitty_conf"
           check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
+          check_link "$HOME/.config/nvim" "$REPO/nvim"
           echo "All symlinks verified."
 
   test-bootstrap-fails-on-linux:

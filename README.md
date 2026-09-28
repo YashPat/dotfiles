@@ -104,6 +104,7 @@ cd ~/dotfiles && git add -A && git status && git commit -m "Describe change" && 
 | `zshrc`         | `~/.zshrc`                       |
 | `kitty/`        | `~/.config/kitty`                |
 | `starship.toml` | `~/.config/starship.toml`        |
+| `nvim/`         | `~/.config/nvim`                 |
 
 ---
 
@@ -111,7 +112,7 @@ cd ~/dotfiles && git add -A && git status && git commit -m "Describe change" && 
 
 Every push and pull request to `main` runs [GitHub Actions](.github/workflows/test-install.yml):
 
-- **link-dotfiles:** The link script runs in a fresh environment and all three symlinks are verified (no Homebrew or formulae—fast and deterministic).
+- **link-dotfiles:** The link script runs in a fresh environment and the symlinks are verified (no Homebrew or formulae—fast and deterministic).
 - **bootstrap.sh:** On Linux, the workflow confirms bootstrap exits with the "macOS only" message (smoke test; full bootstrap is not run in CI).
 
 Check the **Actions** tab on GitHub to confirm both pass.

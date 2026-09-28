@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # link-dotfiles.sh — Idempotent symlink installer. Creates links from this repo
-# into $HOME so shell, Kitty, and Starship use the repo as source of truth.
+# into $HOME so shell, Kitty, Starship, and Neovim use the repo as source of truth.
 #
 # Run from the repo root. Safe to run multiple times.
 # If a real file exists at the target (not a symlink), it is backed up to
@@ -56,6 +56,9 @@ link "$REPO_ROOT/kitty" "$HOME/.config/kitty"
 
 # Starship
 link "$REPO_ROOT/starship.toml" "$HOME/.config/starship.toml"
+
+# Neovim
+link "$REPO_ROOT/nvim" "$HOME/.config/nvim"
 
 # wall CLI (https://github.com/YashPat/wall) — clone/pull, then link into PATH
 WALL_REPO="$HOME/Code/wall"
