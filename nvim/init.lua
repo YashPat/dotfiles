@@ -1,9 +1,2 @@
--- Leader must be set before plugins load.
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-
-require("config.options")
-require("config.netrw")
-require("config.keymaps")
+-- bootstrap lazy.nvim, LazyVim and your plugins
 require("config.lazy")
-require("config.appearance").setup()
