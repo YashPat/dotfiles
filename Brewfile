@@ -14,6 +14,8 @@ brew "zsh-autosuggestions"
 brew "zsh-syntax-highlighting"
 brew "mole"
 brew "herdr"
+brew "pnpm"
+brew "neovim"
 
 # Casks (brew install --cask) — uncomment or add what you use
 cask "kitty"
