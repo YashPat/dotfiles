@@ -8,6 +8,25 @@ alias kconf='cursor ~/dotfiles/kitty/kitty.conf'
 alias nconf='cursor ~/dotfiles/nvim'
 alias v='nvim'
 
+# kitten themes saves the theme, then signals Kitty with SIGUSR1.
+# That signal no longer reloads this Kitty, so apply the file over the control socket.
+kitten() {
+  command kitten "$@"
+  local rc=$?
+  [[ $rc -eq 0 && $1 == themes ]] || return $rc
+  local sock="${KITTY_LISTEN_ON:-}"
+  if [[ -z $sock ]]; then
+    local matches=(${HOME}/.cache/kitty/control-*(N))
+    if (( ${#matches} == 1 )); then
+      sock="unix:${matches[1]}"
+    fi
+  fi
+  if [[ -n $sock ]]; then
+    command kitten @ --to "$sock" load-config >/dev/null
+  fi
+  return $rc
+}
+
 # --- Prompt & plugins (packages are in Brewfile) ---
 # Ensure brew is on PATH before using it (GUI apps like Kitty start with minimal env)
 [[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
