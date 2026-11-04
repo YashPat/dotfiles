@@ -5,7 +5,7 @@ startgroup
     animation_step 100
     var float STAR_CELL 26.0
     var float STAR_DENSITY 0.35
-    var float STAR_BRIGHT 0.55
+    var float STAR_BRIGHT 0.36
     var float STAR_SPEED 3.0
     var float STAR_FAR_SCALE 0.55
     var float STAR_FAR_SPEED 0.35
