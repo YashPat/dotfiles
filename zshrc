@@ -44,3 +44,4 @@ eval "$(starship init zsh)"                                    # prompt from sta
   source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 [[ -f "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]] && \
   source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+export PATH="$HOME/.cargo/bin:$PATH"  # cargo install binaries

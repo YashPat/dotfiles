@@ -20,3 +20,5 @@ brew "neovim"
 # Casks (brew install --cask) — uncomment or add what you use
 cask "kitty"
 cask "desktoppr"
+cask "cursor", args: { appdir: "~/Applications" }
+cask "font-jetbrains-mono-nerd-font"  # Kitty's font_family
