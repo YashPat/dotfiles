@@ -8,22 +8,24 @@ alias kconf='cursor ~/dotfiles/kitty/kitty.conf'
 alias nconf='cursor ~/dotfiles/nvim'
 alias v='nvim'
 
-# kitten themes saves the theme, then signals Kitty with SIGUSR1.
-# That signal no longer reloads this Kitty, so apply the file over the control socket.
+# kitten theme(s) writes the theme, then puts the old colors back on exit.
+# ~/.local/bin/kitten reloads Kitty over its control socket after that.
+# Shells that still resolve kitten to the app binary reload from here.
 kitten() {
   command kitten "$@"
   local rc=$?
-  [[ $rc -eq 0 && $1 == themes ]] || return $rc
-  local sock="${KITTY_LISTEN_ON:-}"
-  if [[ -z $sock ]]; then
-    local matches=(${HOME}/.cache/kitty/control-*(N))
-    if (( ${#matches} == 1 )); then
-      sock="unix:${matches[1]}"
-    fi
+  case $1 in
+    theme|themes) ;;
+    *) return $rc ;;
+  esac
+  [[ $rc -eq 0 ]] || return $rc
+  local bin target
+  bin=${commands[kitten]:-}
+  target=$(readlink "$bin" 2>/dev/null || true)
+  if [[ $target == */dotfiles/bin/kitten ]]; then
+    return $rc
   fi
-  if [[ -n $sock ]]; then
-    command kitten @ --to "$sock" load-config >/dev/null
-  fi
+  "$HOME/dotfiles/bin/kitten" --apply-theme-reload
   return $rc
 }
 

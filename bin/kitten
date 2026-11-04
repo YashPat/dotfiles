@@ -1,0 +1,69 @@
+#!/bin/bash
+# Pressing M in `kitten themes` writes current-theme.conf, then the kitten
+# restores the previous palette on exit. Kitty's SIGUSR1 reload does not
+# clear that, so apply the saved theme over the control socket afterwards.
+# Also covers `kitten theme` (unique prefix for themes).
+
+REAL="${HOME}/Applications/kitty.app/Contents/MacOS/kitten"
+if [[ ! -x "$REAL" && -x /Applications/kitty.app/Contents/MacOS/kitten ]]; then
+  REAL="/Applications/kitty.app/Contents/MacOS/kitten"
+fi
+if [[ ! -x "$REAL" ]]; then
+  echo "kitten: kitty app not found" >&2
+  exit 127
+fi
+
+reload_theme() {
+  local candidate path sock
+  local -a candidates=()
+  local -a live=()
+
+  if [[ -n "${KITTY_LISTEN_ON:-}" ]]; then
+    candidates+=("$KITTY_LISTEN_ON")
+  fi
+  if [[ -n "${KITTY_PID:-}" && -S "${HOME}/.cache/kitty/control-${KITTY_PID}" ]]; then
+    candidates+=("unix:${HOME}/.cache/kitty/control-${KITTY_PID}")
+  fi
+  shopt -s nullglob
+  for path in "${HOME}/.cache/kitty/control-"*; do
+    [[ -S "$path" ]] && candidates+=("unix:${path}")
+  done
+
+  local seen="|"
+  for candidate in "${candidates[@]}"; do
+    [[ "$seen" == *"|${candidate}|"* ]] && continue
+    seen+="${candidate}|"
+    if "$REAL" @ --to "$candidate" ls >/dev/null 2>&1; then
+      live+=("$candidate")
+    fi
+  done
+
+  if [[ ${#live[@]} -eq 0 ]]; then
+    echo "kitten: theme was saved, but no Kitty socket answered for a reload" >&2
+    return 0
+  fi
+
+  # Let the theme kitten finish restoring the old palette, then replace it.
+  sleep 0.4
+  for sock in "${live[@]}"; do
+    if ! "$REAL" @ --to "$sock" load-config; then
+      echo "kitten: theme was saved, but Kitty did not reload ($sock)" >&2
+    fi
+  done
+}
+
+if [[ "${1:-}" == "--apply-theme-reload" ]]; then
+  reload_theme
+  exit 0
+fi
+
+if [[ "${1:-}" != theme && "${1:-}" != themes ]]; then
+  exec "$REAL" "$@"
+fi
+
+"$REAL" "$@"
+rc=$?
+if [[ $rc -eq 0 ]]; then
+  reload_theme
+fi
+exit "$rc"
