@@ -1,0 +1,10 @@
+# Slow ink clouds; sumi ink on light themes, indigo smoke on dark. ~10 fps.
+
+# INK_STRENGTH: overall strength; INK_SPEED: drift speed, 0 freezes; INK_SCALE: higher gives smaller clouds.
+startgroup
+    animation_step 100
+    var float INK_STRENGTH 1.0
+    var float INK_SPEED 0.02
+    var float INK_SCALE 2.2
+    shaders ink-wash
+endgroup

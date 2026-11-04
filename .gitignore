@@ -14,3 +14,9 @@
 # Backups written by kitty (kitty.conf.bak) and link-dotfiles.sh (*.bak.<timestamp>)
 *.bak
 *.bak.*
+
+# zxzx shaders with no reuse license: installed locally, not redistributed (github.com/zxzxn3/kitty-shaders)
+kitty/shaders/pearl.slang
+kitty/shaders/pearl.pipeline
+kitty/shaders/contour.pipeline
+kitty/shaders/surface.slang

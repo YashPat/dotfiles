@@ -59,10 +59,18 @@ def user_shaders():
     except OSError:
         return []
     pipelines = {f[:-9] for f in files if f.endswith('.pipeline')}
+    # a .slang used by some pipeline (e.g. contour.pipeline -> surface.slang) is a building block, not a choice
+    used = set()
+    for name in pipelines:
+        with open(os.path.join(d, name + '.pipeline')) as fh:
+            for line in fh:
+                parts = line.split()
+                if parts[:1] == ['shaders']:
+                    used.update(parts[1:])
     found = []
     for f in files:
         name, ext = os.path.splitext(f)
-        if ext == '.pipeline' or (ext == '.slang' and name not in pipelines):
+        if ext == '.pipeline' or (ext == '.slang' and name not in pipelines and name not in used):
             desc = ''
             with open(os.path.join(d, f)) as fh:  # first comment line describes it
                 for line in fh:

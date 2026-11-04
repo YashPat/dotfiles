@@ -1,0 +1,12 @@
+# Dappled sun flecks through swaying leaves on light themes, moonlight through branches on dark. ~15 fps.
+
+# LEAF_STRENGTH: overall strength; LEAF_SWAY: sway speed, 0 holds still;
+# LEAF_SCALE: higher gives smaller canopy gaps; FLECK_CELLS: higher gives more, smaller sun flecks.
+startgroup
+    animation_step 66
+    var float LEAF_STRENGTH 1.0
+    var float LEAF_SWAY 1.0
+    var float LEAF_SCALE 2.6
+    var float FLECK_CELLS 9.0
+    shaders komorebi
+endgroup

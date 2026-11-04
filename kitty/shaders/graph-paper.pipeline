@@ -1,0 +1,10 @@
+# Graph paper grid; blue ink on light themes, blueprint on dark. Static, no animation.
+
+# GRID_PX: minor spacing in physical pixels; GRID_MAJOR: cells per heavy line; GRID_STRENGTH: line strength.
+startgroup
+    animation_step 0
+    var float GRID_PX 40.0
+    var float GRID_MAJOR 5.0
+    var float GRID_STRENGTH 1.0
+    shaders graph-paper
+endgroup

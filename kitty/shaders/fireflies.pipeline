@@ -1,0 +1,12 @@
+# Wandering, blinking fireflies that gather light near the mouse; amber pollen on light themes. ~20 fps.
+
+# FLY_CELL_PX: spacing (fewer, larger gaps when higher); FLY_DENSITY: fraction of cells with a firefly;
+# FLY_BRIGHT: peak brightness; FLY_RISE: upward drift in pixels per second.
+startgroup
+    animation_step 50
+    var float FLY_CELL_PX 150.0
+    var float FLY_DENSITY 0.45
+    var float FLY_BRIGHT 0.35
+    var float FLY_RISE 6.0
+    shaders fireflies
+endgroup
