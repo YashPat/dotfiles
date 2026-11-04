@@ -1,0 +1,16 @@
+# Deep-space background; attribution is in star-nest.slang. Use only one animated background.
+
+# NEB_BLACK: black level on the original 17-iteration scale; higher values reduce visible structure.
+# NEB_BRIGHT: nebula brightness; NEB_SPEED: drift speed, 0 disables drift.
+
+# Keep the texture declaration to avoid changing the texture set when switching backgrounds.
+textures a
+
+startgroup
+    # Time-based animation requires periodic redraws.
+    animation_step 400
+    var float NEB_BLACK 18.0
+    var float NEB_BRIGHT 0.0004
+    var float NEB_SPEED 0.0025
+    shaders star-nest
+endgroup

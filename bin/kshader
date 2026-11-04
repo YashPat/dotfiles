@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+# Browse kitty's built-in shaders with live preview, like `kitten themes`.
+#   kshader            open the picker
+#   kshader <name>     switch straight to a shader
+#   kshader off        turn shaders off
+import curses
+import os
+import subprocess
+import sys
+import time
+
+CONF = os.path.expanduser('~/.config/kitty/kitty.conf')
+PREVIEW_DELAY = 0.3  # seconds to rest on an item before it is applied
+
+# kitty bundles these inside the app, so the list is hardcoded (from the 0.50 source tree)
+GROUPS = [
+    ('Off', [
+        ('off', 'no shader'),
+    ]),
+    ('Animated backgrounds', [
+        ('northern-lights', 'aurora ribbons drifting behind the text'),
+        ('underwater', 'caustic light ripples'),
+        ('water', 'flowing water surface'),
+        ('inside-the-matrix', 'falling green code rain'),
+        ('fireworks', 'fireworks bursting behind the text'),
+        ('fireworks-rockets', 'fireworks with launching rockets'),
+        ('pond-ripple', 'ripples spreading out as you click and type'),
+    ]),
+    ('Retro and display', [
+        ('crt', 'curved screen, scanlines, glow'),
+        ('crt-blue', 'CRT with a blue tint'),
+        ('tft', 'visible LCD pixel grid'),
+        ('bloom', 'soft glow around bright text'),
+        ('negative', 'inverted colors'),
+    ]),
+    ('Cursor trails (need cursor_trail set)', [
+        ('cursor-trail-blaze', 'fiery trail'),
+        ('cursor-trail-lightning', 'lightning bolt trail'),
+        ('cursor-trail-pixiedust', 'sparkly particles off the cursor'),
+        ('cursor-trail-railgun', 'particle beam off the cursor'),
+        ('cursor-trail-torpedo', 'particle wake off the cursor'),
+        ('cursor-trail-motion-blur', 'smooth blur on fast moves'),
+        ('cursor-trail-default', 'the standard trail'),
+    ]),
+    ('Focus and navigation', [
+        ('spotlight', 'light on the focused area, rest dimmed'),
+        ('focus-highlight', 'highlights the active pane'),
+        ('dim-inactive-windows', 'dims unfocused panes'),
+        ('tab-change', 'animation when switching tabs'),
+    ]),
+]
+
+
+def user_shaders():
+    # shaders you installed yourself: every .pipeline, plus any .slang without one
+    d = os.path.join(os.path.dirname(CONF), 'shaders')
+    try:
+        files = sorted(os.listdir(d))
+    except OSError:
+        return []
+    pipelines = {f[:-9] for f in files if f.endswith('.pipeline')}
+    found = []
+    for f in files:
+        name, ext = os.path.splitext(f)
+        if ext == '.pipeline' or (ext == '.slang' and name not in pipelines):
+            desc = ''
+            with open(os.path.join(d, f)) as fh:  # first comment line describes it
+                for line in fh:
+                    line = line.strip()
+                    if line.startswith(('#', '//')) and not line.startswith('#language'):
+                        desc = line.lstrip('#/ ').rstrip('.')
+                        break
+            found.append((name, desc))
+    return found
+
+
+if user_shaders():
+    GROUPS.insert(1, ('Your shaders (~/.config/kitty/shaders)', user_shaders()))
+ITEMS = [(name, desc) for _, items in GROUPS for name, desc in items]
+
+
+def read_current():
+    with open(CONF) as f:
+        for line in f:
+            if line.startswith('custom_shaders'):
+                return line.split(None, 1)[1].strip()
+    return 'off'
+
+
+def apply(name):
+    with open(CONF) as f:
+        lines = [l for l in f if not l.startswith('custom_shaders')]
+    if lines and not lines[-1].endswith('\n'):
+        lines[-1] += '\n'
+    if name != 'off':
+        lines.append(f'custom_shaders {name}\n')
+    # write through any symlink (dotfiles) so the link itself is kept
+    with open(os.path.realpath(CONF), 'w') as f:
+        f.writelines(lines)
+    subprocess.run(['pkill', '-USR1', '-x', 'kitty'], check=False)
+
+
+def picker(scr, original):
+    curses.curs_set(0)
+    curses.use_default_colors()
+    curses.init_pair(1, curses.COLOR_CYAN, -1)    # group headers
+    curses.init_pair(2, curses.COLOR_GREEN, -1)   # applied marker
+    curses.init_pair(3, -1, -1)                   # descriptions (dimmed)
+    scr.timeout(100)
+
+    names = [n for n, _ in ITEMS]
+    idx = names.index(original) if original in names else 0
+    applied = original
+    moved_at = None
+    top = 0
+
+    while True:
+        rows = []  # (kind, text, item index)
+        for title, items in GROUPS:
+            rows.append(('h', title, None))
+            for name, desc in items:
+                rows.append(('i', (name, desc), names.index(name)))
+            rows.append(('b', '', None))
+        sel_row = next(r for r, row in enumerate(rows) if row[2] == idx)
+
+        h, w = scr.getmaxyx()
+        body = max(1, h - 4)
+        if sel_row < top:
+            top = max(0, sel_row - 1)
+        elif sel_row >= top + body:
+            top = sel_row - body + 1
+
+        scr.erase()
+        header = f' kitty shaders  ·  now: {applied}'
+        if original not in names and applied == original:
+            header += '  (custom)'
+        scr.addnstr(0, 0, header, w - 1, curses.A_BOLD)
+        for y, (kind, text, i) in enumerate(rows[top:top + body], start=2):
+            if kind == 'h':
+                scr.addnstr(y, 1, text, w - 2, curses.color_pair(1) | curses.A_BOLD)
+            elif kind == 'i':
+                name, desc = text
+                mark = '●' if name == applied else ' '
+                attr = curses.A_REVERSE if i == idx else 0
+                scr.addnstr(y, 2, mark, 1, curses.color_pair(2))
+                line = f' {name:<26}'
+                scr.addnstr(y, 4, line, w - 5, attr | curses.A_BOLD)
+                if 4 + len(line) < w - 1:
+                    scr.addnstr(y, 4 + len(line), desc, w - 5 - len(line), curses.A_DIM)
+        help_ = ' ↑↓/jk move · enter keep · o off · esc/q cancel (restores original)'
+        scr.addnstr(h - 1, 0, help_, w - 1, curses.A_DIM)
+        scr.refresh()
+
+        key = scr.getch()
+        if key in (curses.KEY_UP, ord('k')):
+            idx = (idx - 1) % len(names)
+            moved_at = time.monotonic()
+        elif key in (curses.KEY_DOWN, ord('j')):
+            idx = (idx + 1) % len(names)
+            moved_at = time.monotonic()
+        elif key in (ord('g'), curses.KEY_HOME):
+            idx, moved_at = 0, time.monotonic()
+        elif key in (ord('G'), curses.KEY_END):
+            idx, moved_at = len(names) - 1, time.monotonic()
+        elif key == ord('o'):
+            idx, moved_at = 0, None
+            applied = 'off'
+            apply('off')
+        elif key in (10, 13, curses.KEY_ENTER):
+            if names[idx] != applied:
+                apply(names[idx])
+            return names[idx]
+        elif key in (27, ord('q')):
+            if applied != original:
+                apply(original)
+            return None
+        elif key == -1 and moved_at and time.monotonic() - moved_at >= PREVIEW_DELAY:
+            moved_at = None
+            if names[idx] != applied:
+                applied = names[idx]
+                apply(applied)
+
+
+def main():
+    if len(sys.argv) > 1:
+        apply(sys.argv[1])
+        print(f'shader: {sys.argv[1]} (reloaded)')
+        return
+    os.environ.setdefault('ESCDELAY', '25')
+    original = read_current()
+    try:
+        chosen = curses.wrapper(picker, original)
+    except KeyboardInterrupt:
+        apply(original)
+        chosen = None
+    print(f'shader: {chosen} (kept)' if chosen else f'shader: {original} (unchanged)')
+
+
+if __name__ == '__main__':
+    main()

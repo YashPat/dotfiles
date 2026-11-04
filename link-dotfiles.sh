@@ -53,6 +53,9 @@ link "$REPO_ROOT/zshrc" "$HOME/.zshrc"
 # kitten wrapper: theme switches reload the running Kitty (see bin/kitten)
 link "$REPO_ROOT/bin/kitten" "$HOME/.local/bin/kitten"
 
+# kshader: pick Kitty shaders with live preview (see bin/kshader)
+link "$REPO_ROOT/bin/kshader" "$HOME/.local/bin/kshader"
+
 # Kitty — whole config dir so `kitten themes` can write current-theme.conf
 # next to kitty.conf (relative includes work; plain `kitten themes` just works)
 link "$REPO_ROOT/kitty" "$HOME/.config/kitty"

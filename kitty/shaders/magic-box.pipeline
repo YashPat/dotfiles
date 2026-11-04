@@ -1,0 +1,15 @@
+# Magic Box fractal background; attribution is in magic-box.slang. Use only one animated background.
+
+# MBOX_STRENGTH: background blend; MBOX_SPEED: forward speed, 0 for no drift.
+# MBOX_GATE: filament threshold; lower values reveal more filaments. Colors and iteration constants are in the shader.
+
+# Keep the texture declaration to avoid changing the texture set when switching backgrounds.
+textures a
+
+startgroup
+    animation_step 16
+    var float MBOX_STRENGTH 0.60
+    var float MBOX_SPEED 0.05
+    var float MBOX_GATE 0.34
+    shaders magic-box
+endgroup

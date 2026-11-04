@@ -1,0 +1,12 @@
+# magic-box at ~15 fps with a slower drift, paused while the window is unfocused or you are idle.
+textures a
+
+startgroup
+    animation_start os-window-focus-in | user-activity
+    animation_stop  os-window-focus-out | user-idle
+    animation_step 66
+    var float MBOX_STRENGTH 0.60
+    var float MBOX_SPEED 0.03
+    var float MBOX_GATE 0.34
+    shaders magic-box
+endgroup

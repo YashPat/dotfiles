@@ -1,0 +1,13 @@
+# star-nest at ~5 fps, paused while the window is unfocused or you are idle.
+textures a
+
+startgroup
+    animation_start os-window-focus-in | user-activity
+    animation_stop  os-window-focus-out | user-idle
+    animation_step 200
+    var float NEB_BLACK 24.0
+    var float NEB_BRIGHT 0.00015
+    var float NEB_SPEED 0.0006
+    var float NEB_PEAK 0.15
+    shaders star-nest
+endgroup

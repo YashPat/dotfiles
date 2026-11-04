@@ -1,0 +1,21 @@
+# Two-layer parallax starfield; use only one animated background.
+
+# STAR_CELL: cell size in pixels; smaller values increase density.
+# STAR_DENSITY: occupied-cell fraction; STAR_BRIGHT: linear brightness.
+# STAR_SPEED: pixels per second; for static rendering set speed and animation_step to 0.
+# STAR_FAR_SCALE: far-layer size and brightness; STAR_FAR_SPEED: far-layer speed ratio.
+
+# Keep the texture declaration to avoid changing the texture set when switching backgrounds.
+textures a
+
+startgroup
+    # Approximately 60 fps; motion above about 2 pixels per frame can look discontinuous.
+    animation_step 16
+    var float STAR_CELL 26.0
+    var float STAR_DENSITY 0.35
+    var float STAR_BRIGHT 0.55
+    var float STAR_SPEED 30.0
+    var float STAR_FAR_SCALE 0.55
+    var float STAR_FAR_SPEED 0.35
+    shaders star-hash
+endgroup
