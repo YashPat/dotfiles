@@ -1,82 +1,42 @@
 #!/usr/bin/env bash
 #
-# link-dotfiles.sh — Idempotent symlink installer. Creates links from this repo
-# into $HOME so shell, Kitty, Starship, and Neovim use the repo as source of truth.
+# link-dotfiles.sh — Idempotent symlink installer. Links this repo into $HOME
+# so shell, Kitty, Starship, and Neovim use the repo as source of truth.
+# Offline: no installs, no clones. Safe to run any time.
 #
-# Run from the repo root. Safe to run multiple times.
-# If a real file exists at the target (not a symlink), it is backed up to
-# <target>.bak.<timestamp> before linking (no overwrite). Existing symlinks are force-updated.
+# A real file at the target is backed up to <target>.bak.<timestamp> first.
+# Existing symlinks are updated in place.
 #
 
 set -e
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [[ -z "$HOME" ]]; then
-  echo "ERROR: HOME is not set." >&2
-  exit 1
-fi
-
-echo "Dotfiles repo: $REPO_ROOT"
-echo "HOME: $HOME"
-echo ""
-
-# Ensure config directories exist (absolute paths)
 mkdir -p "$HOME/.config" "$HOME/.local/bin"
 
-# Link repo file to system path. Backs up real files; force-updates symlinks.
 link() {
-  local src="$1"
-  local dst="$2"
+  local src="$1" dst="$2"
   if [[ ! -e "$src" ]]; then
     echo "SKIP (missing): $src" >&2
     return 0
   fi
-
-  if [[ -L "$dst" ]]; then
-    ln -sfn "$src" "$dst"
-    echo "LINK (updated): $dst -> $src"
-  elif [[ -e "$dst" ]]; then
-    backup="${dst}.bak.$(date +%s)"
+  if [[ -e "$dst" && ! -L "$dst" ]]; then
+    local backup="${dst}.bak.$(date +%s)"
     mv "$dst" "$backup"
     echo "BACKUP: $dst -> $backup"
-    ln -sfn "$src" "$dst"
-    echo "LINK: $dst -> $src"
-  else
-    ln -sfn "$src" "$dst"
-    echo "LINK: $dst -> $src"
   fi
+  ln -sfn "$src" "$dst"
+  echo "LINK: $dst -> $src"
 }
 
-# Shell
-link "$REPO_ROOT/zshrc" "$HOME/.zshrc"
-
-# kitten wrapper: theme switches reload the running Kitty (see bin/kitten)
-link "$REPO_ROOT/bin/kitten" "$HOME/.local/bin/kitten"
-
-# kshader: pick Kitty shaders with live preview (see bin/kshader)
-link "$REPO_ROOT/bin/kshader" "$HOME/.local/bin/kshader"
-
-# Kitty — whole config dir so `kitten themes` can write current-theme.conf
-# next to kitty.conf (relative includes work; plain `kitten themes` just works)
-link "$REPO_ROOT/kitty" "$HOME/.config/kitty"
-
-# Starship
+link "$REPO_ROOT/zshrc"         "$HOME/.zshrc"
 link "$REPO_ROOT/starship.toml" "$HOME/.config/starship.toml"
-
-# Neovim
-link "$REPO_ROOT/nvim" "$HOME/.config/nvim"
-
-# wall CLI (https://github.com/YashPat/wall) — clone/pull, then link into PATH
-WALL_REPO="$HOME/Code/wall"
-mkdir -p "$HOME/.local/bin" "$HOME/Code"
-if [[ -d "$WALL_REPO/.git" ]]; then
-  echo "Updating wall..."
-  git -C "$WALL_REPO" pull --ff-only
-else
-  echo "Cloning wall..."
-  git clone https://github.com/YashPat/wall.git "$WALL_REPO"
-fi
-link "$WALL_REPO/wall" "$HOME/.local/bin/wall"
+# Whole dirs, so `kitten themes` can write current-theme.conf next to kitty.conf
+link "$REPO_ROOT/kitty"         "$HOME/.config/kitty"
+link "$REPO_ROOT/nvim"          "$HOME/.config/nvim"
+link "$REPO_ROOT/bin/kitten"    "$HOME/.local/bin/kitten"   # theme picks reload Kitty
+link "$REPO_ROOT/bin/kshader"   "$HOME/.local/bin/kshader"  # shader picker
+# wall CLI lives in its own repo (bootstrap.sh clones it)
+link "$HOME/Code/wall/wall"     "$HOME/.local/bin/wall"
 
 echo ""
 echo "Done. Reload shell config: source ~/.zshrc"

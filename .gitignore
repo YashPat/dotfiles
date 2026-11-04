@@ -14,7 +14,3 @@
 # Backups written by kitty (kitty.conf.bak) and link-dotfiles.sh (*.bak.<timestamp>)
 *.bak
 *.bak.*
-
-# Local overrides (optional; uncomment if you use them)
-# local/
-# *.local

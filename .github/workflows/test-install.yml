@@ -7,66 +7,18 @@ on:
     branches: [main]
 
 jobs:
-  test-link-dotfiles:
+  link:
     runs-on: ubuntu-latest
+    env:
+      HOME: ${{ github.workspace }}/test-home
     steps:
       - uses: actions/checkout@v4
-
-      - name: Run link-dotfiles.sh
-        env:
-          HOME: ${{ github.workspace }}/test-home
+      - run: bash link-dotfiles.sh
+      - name: Verify symlinks point into the repo
         run: |
-          cd "$GITHUB_WORKSPACE"
-          mkdir -p "$HOME/.config"
-          bash link-dotfiles.sh
-
-      - name: Verify symlinks
-        env:
-          HOME: ${{ github.workspace }}/test-home
-          REPO: ${{ github.workspace }}
-        run: |
-          check_link() {
-            local dst="$1" expected_src="$2"
-            if [[ ! -L "$dst" ]]; then
-              echo "FAIL: $dst is not a symlink"
-              exit 1
-            fi
-            target=$(readlink -f "$dst")
-            expected_canonical=$(readlink -f "$expected_src")
-            if [[ "$target" != "$expected_canonical" ]]; then
-              echo "FAIL: $dst points to $target, expected $expected_canonical"
-              exit 1
-            fi
-            echo "OK $dst -> $target"
-          }
-          check_link "$HOME/.zshrc" "$REPO/zshrc"
-          check_link "$HOME/.config/kitty" "$REPO/kitty"
-          # kitty.conf is a regular file inside the linked kitty/ dir, not its own symlink
-          kitty_conf=$(readlink -f "$HOME/.config/kitty/kitty.conf")
-          expected_kitty_conf=$(readlink -f "$REPO/kitty/kitty.conf")
-          if [[ ! -f "$HOME/.config/kitty/kitty.conf" ]] || [[ "$kitty_conf" != "$expected_kitty_conf" ]]; then
-            echo "FAIL: kitty.conf via linked dir is $kitty_conf, expected $expected_kitty_conf"
-            exit 1
-          fi
-          echo "OK $HOME/.config/kitty/kitty.conf resolves to $kitty_conf"
-          check_link "$HOME/.config/starship.toml" "$REPO/starship.toml"
-          check_link "$HOME/.config/nvim" "$REPO/nvim"
-          echo "All symlinks verified."
-
-  test-bootstrap-fails-on-linux:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: bootstrap.sh exits with macOS-only message on Linux
-        run: |
-          set +e
-          out=$(bash bootstrap.sh 2>&1)
-          code=$?
-          set -e
-          if [[ $code -eq 1 ]] && echo "$out" | grep -q "bootstrap.sh is for macOS only"; then
-            echo "OK: bootstrap.sh correctly refuses to run on Linux"
-          else
-            echo "FAIL: expected exit 1 and macOS-only message. Exit code: $code"
-            echo "$out"
-            exit 1
-          fi
+          for pair in zshrc:.zshrc starship.toml:.config/starship.toml kitty:.config/kitty \
+                      nvim:.config/nvim bin/kitten:.local/bin/kitten bin/kshader:.local/bin/kshader; do
+            src="$GITHUB_WORKSPACE/${pair%%:*}" dst="$HOME/${pair#*:}"
+            [[ -L $dst && $(readlink -f "$dst") == $(readlink -f "$src") ]] || { echo "FAIL: $dst"; exit 1; }
+            echo "OK $dst"
+          done

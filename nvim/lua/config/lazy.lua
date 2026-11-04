@@ -21,8 +21,7 @@ require("lazy").setup({
     { import = "lazyvim.plugins.extras.lang.typescript" },
     { import = "lazyvim.plugins.extras.lang.svelte" },
     { import = "lazyvim.plugins.extras.lang.python" },
-    -- import/override with your plugins
-    { import = "plugins" },
+    -- your own plugins: add lua/plugins/*.lua and `{ import = "plugins" }` here
   },
   defaults = {
     -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
