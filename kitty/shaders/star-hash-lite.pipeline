@@ -1,9 +1,7 @@
-# star-hash at ~10 fps, paused while the window is unfocused or you are idle.
+# star-hash at ~10 fps; always on (a stopped shader disappears instead of freezing).
 textures a
 
 startgroup
-    animation_start os-window-focus-in | user-activity
-    animation_stop  os-window-focus-out | user-idle
     animation_step 100
     var float STAR_CELL 26.0
     var float STAR_DENSITY 0.35
