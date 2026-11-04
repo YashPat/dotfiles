@@ -6,6 +6,6 @@ startgroup
     var float NEB_BLACK 24.0
     var float NEB_BRIGHT 0.00015
     var float NEB_SPEED 0.0006
-    var float NEB_PEAK 0.15
+    var float NEB_PEAK 0.09
     shaders star-nest
 endgroup
