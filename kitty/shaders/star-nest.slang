@@ -32,20 +32,19 @@ static const float NEB_DISTFADE = 0.730;
 static const float NEB_STEP0 = 0.1;
 static const float NEB_A_MAX = 1.0e5;  // Clamp extreme field values to avoid infinity.
 static const float BG_TOLERANCE = 0.02;
+// Multi-pass mode: -1 = single full-resolution pass (default);
+// 0 = render the nebula into a reduced region of texture a (no text mask);
+// 1 = upscale texture a and composite it behind the text.
+static const int NEB_STAGE = -1;
+static const float NEB_RES = 0.5;      // Fraction of the window, per axis, used by stage 0.
 
 // GLSL mod uses floor semantics, unlike Slang fmod; implement it explicitly.
 static float3
 glsl_mod(float3 x, float3 y) { return x - y * floor(x / y); }
 
-public float4
-fragment_main(float4 color, KittyTextures t, KittyCustomShaderData d) {
-    // Reject text pixels before running the expensive fractal calculations.
-    float3 diff = abs(color.rgb - d.background.rgb);
-    float bg = 1.0 - smoothstep(0.0, BG_TOLERANCE, max(max(diff.r, diff.g), diff.b));
-    if (bg <= 0.0) return color;
-
-    float2 res = max(float2(d.viewport_size_pixels) * t.viewport.zw, float2(1.0));
-    float2 uv = t.pos - 0.5;
+static float3
+nebula(float2 pos, float2 res, KittyCustomShaderData d) {
+    float2 uv = pos - 0.5;
     uv.y *= res.y / res.x;               // Aspect-ratio correction keeps stars isotropic.
     float3 dir = float3(uv * NEB_ZOOM, 1.0);
 
@@ -81,6 +80,27 @@ fragment_main(float4 color, KittyTextures t, KittyCustomShaderData d) {
 
     v = lerp(float3(length(v)), v, NEB_SAT);
     // Exponential compression prevents solid white highlights.
-    float3 col = NEB_PEAK * (1.0 - exp(-v * NEB_SCALE / NEB_PEAK));
+    return NEB_PEAK * (1.0 - exp(-v * NEB_SCALE / NEB_PEAK));
+}
+
+public float4
+fragment_main(float4 color, KittyTextures t, KittyCustomShaderData d) {
+    float2 res = max(float2(d.viewport_size_pixels) * t.viewport.zw, float2(1.0));
+    // Stage 0: t.pos spans this group's reduced region, so the whole sky fits in it.
+    if (NEB_STAGE == 0) return float4(nebula(t.pos, res, d), 1.0);
+
+    // Reject text pixels before running the expensive fractal calculations.
+    float3 diff = abs(color.rgb - d.background.rgb);
+    float bg = 1.0 - smoothstep(0.0, BG_TOLERANCE, max(max(diff.r, diff.g), diff.b));
+    if (bg <= 0.0) return color;
+
+    float3 col;
+    if (NEB_STAGE == 1) {
+        // Stay half a texel inside the rendered region so bilinear filtering never reads past it.
+        float2 inner = NEB_RES - 0.5 / max(float2(d.viewport_size_pixels), float2(1.0));
+        col = t.a.Sample(min(t.pos * NEB_RES, inner)).rgb;
+    } else {
+        col = nebula(t.pos, res, d);
+    }
     return float4(lerp(color.rgb, col, bg), color.a);
 }

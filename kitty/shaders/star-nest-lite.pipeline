@@ -1,11 +1,32 @@
-# star-nest at ~5 fps; always on (a stopped shader disappears instead of freezing).
+# star-nest, tuned for low GPU load; always on (a stopped shader disappears instead of freezing).
+# Drift is so slow that ~0.7 fps looks the same as 5 fps.
+# 12 coarser volume steps (instead of 16) span the same depth range; 12 fractal
+# iterations (instead of 14). Fade, normalization and brightness are rescaled to
+# keep the original look: ~144 inner iterations per pixel instead of 224.
+# Rendered at half resolution per axis (1/4 of the pixels), then upscaled behind the text.
 textures a
 
 startgroup
-    animation_step 200
+    animation_step 1500
     var float NEB_BLACK 24.0
-    var float NEB_BRIGHT 0.00015
+    var float NEB_BRIGHT 0.0002
     var float NEB_SPEED 0.0006
     var float NEB_PEAK 0.09
+    var int NEB_STEPS 12
+    var int NEB_ITER 12
+    var float NEB_ANORM 1.4166667
+    var float NEB_STEP0 0.1333333
+    var float NEB_DISTFADE 0.658
+    var int NEB_STAGE 0
+    viewport_size 0.5 0.5
+    output_texture a
+    shaders star-nest
+endgroup
+
+startgroup
+    animation_step 1500
+    var float NEB_PEAK 0.09
+    var int NEB_STAGE 1
+    var float NEB_RES 0.5
     shaders star-nest
 endgroup
