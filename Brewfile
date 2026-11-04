@@ -14,6 +14,5 @@ brew "pnpm"
 brew "neovim"
 
 cask "kitty", args: { appdir: "~/Applications" }
-cask "desktoppr"
 cask "cursor", args: { appdir: "~/Applications" }
 cask "font-jetbrains-mono-nerd-font"  # Kitty's font_family
